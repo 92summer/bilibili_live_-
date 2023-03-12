@@ -73,7 +73,7 @@ def printDM(data):
             jd = json.loads(data[16:].decode('utf-8', errors='ignore'))
             if (jd['cmd'] == 'DANMU_MSG'):
                 print('[弹幕] ', jd['info'][2][1], ': ', jd['info'][1])
-                msg = jd['info'][2][1] + ':  ' + jd['info'][1]
+                msg = '[id]' + jd['info'][2][1] + ': ' + jd['info'][1]
                 os.system(f'mosquitto_pub -h 192.168.1.103 -p 1883 -t \'msg/danmu\' -m "{msg}"')
             elif (jd['cmd'] == 'SEND_GIFT'):
                 print('[礼物]', jd['data']['uname'], ' ', jd['data']['action'], ' ', jd['data']['num'], 'x', jd['data']['giftName'])
@@ -85,7 +85,7 @@ def printDM(data):
                 print('[Notice] LIVE Ended!')
             elif (jd['cmd'] == 'INTERACT_WORD'): #谁进入直播间
                 print(jd['data']['uname'], " 进入直播间")
-                msg ="[id]" + jd['data']['uname']+ " 进入直播间"
+                msg ="[new]" + jd['data']['uname']+ " 进入直播间"
                 os.system(f'mosquitto_pub -h 192.168.1.103 -p 1883 -t \'msg/danmu\' -m "{msg}"')
 
                 # with open("message.json", "w", encoding='utf-8') as file:
