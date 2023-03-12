@@ -107,7 +107,7 @@ function dequeue ()
 end
 
 sys.taskInit(function() --存储弹幕消息
-    local s1,s2
+    local s1,s2,s3
     for i = 1, 7 do -- 循环7次
         enqueue("") -- 入队一个空字符串
     end
@@ -115,15 +115,21 @@ sys.taskInit(function() --存储弹幕消息
         local ret, _ = sys.waitUntil("mqtt_recv_data",30000)
         if ret then
             if utf8.len(display_data) < 12 then
-            enqueue(display_data)
-            else
+                enqueue(display_data)
+            elseif utf8.len(display_data) < 20 then
                 s1,s2 = devideutf8str_fromx(12, display_data)
                 enqueue(s1)
                 enqueue(s2)
+            else
+                s1,s2 = devideutf8str_fromx(12, display_data)
+                s2,s3 = devideutf8str_fromx(8, s2)
+                enqueue(s1)
+                enqueue(s2)
+                enqueue(s3)
             end
             sys.publish("new_danmu")
         end
-
+        sys.wait(5)
     end
 end)
 
@@ -143,6 +149,7 @@ sys.taskInit(function() --显示弹幕
                 y = y + 20
             end
             y = 30
+        sys.wait(5)
     end
 end)
 
@@ -241,10 +248,10 @@ sys.taskInit(function()
             if ret then
                 gpio.setup(12,gpio.HIGH)
                 gpio.setup(13,gpio.HIGH)
-                sys.wait(50)
+                sys.wait(10)
                 gpio.setup(12,gpio.LOW)
                 gpio.setup(13,gpio.LOW)
-                sys.wait(50)
+                sys.wait(10)
             end
         end
     end
